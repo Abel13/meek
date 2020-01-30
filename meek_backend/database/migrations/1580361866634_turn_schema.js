@@ -9,20 +9,16 @@ class TurnSchema extends Schema {
       table.increments();
 
       table
-        .int("round_id")
+        .integer("round_id")
         .unsigned()
         .references("id")
-        .inTable("rounds")
-        .onUpdate("CASCADE")
-        .onDelete("NO ACTION");
+        .inTable("rounds");
       table
-        .int("winner_id")
+        .integer("winner_id")
         .unsigned()
         .references("id")
-        .inTable("users")
-        .onUpdate("CASCADE")
-        .onDelete("NO ACTION");
-      table.int("turn_number");
+        .inTable("users");
+      table.integer("turn_number");
 
       table.timestamps();
     });

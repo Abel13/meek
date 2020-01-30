@@ -12,17 +12,13 @@ class UserRoundCardSchema extends Schema {
         .integer("user_id")
         .unsigned()
         .references("id")
-        .inTable("users")
-        .onUpdate("CASCADE")
-        .onDelete("NO ACTION");
+        .inTable("users");
       table
-        .int("round_id")
+        .integer("round_id")
         .unsigned()
         .references("id")
-        .inTable("rounds")
-        .onUpdate("CASCADE")
-        .onDelete("NO ACTION");
-      table.int("card");
+        .inTable("rounds");
+      table.integer("card");
 
       table.timestamps();
     });

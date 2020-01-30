@@ -12,11 +12,9 @@ class MatchSchema extends Schema {
         .integer("user_id")
         .unsigned()
         .references("id")
-        .inTable("users")
-        .onUpdate("CASCADE")
-        .onDelete("NO ACTION");
-      table.notNullable().string("name");
-      table.notNullable().dateTime("date");
+        .inTable("users");
+      table.string("name").notNullable();
+      table.dateTime("date").notNullable();
       table.timestamps();
     });
   }

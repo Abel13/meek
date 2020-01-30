@@ -16,14 +16,12 @@ class UserRoundSchema extends Schema {
         .onUpdate("CASCADE")
         .onDelete("NO ACTION");
       table
-        .int("round_id")
+        .integer("round_id")
         .unsigned()
         .references("id")
-        .inTable("rounds")
-        .onUpdate("CASCADE")
-        .onDelete("NO ACTION");
-      table.notNullable().int("bet");
-      table.notNullable().int("round_score");
+        .inTable("rounds");
+      table.integer("bet").notNullable();
+      table.integer("round_score").notNullable();
 
       table.timestamps();
     });

@@ -12,18 +12,14 @@ class UserMatchSchema extends Schema {
         .integer("user_id")
         .unsigned()
         .references("id")
-        .inTable("users")
-        .onUpdate("CASCADE")
-        .onDelete("NO ACTION");
+        .inTable("users");
       table
-        .int("match_id")
+        .integer("match_id")
         .unsigned()
         .references("id")
-        .inTable("matches")
-        .onUpdate("CASCADE")
-        .onDelete("CASCADE");
-      table.notNullable().int("life_bar");
-      table.notNullable().boolean("playing");
+        .inTable("matches");
+      table.integer("life_bar").notNullable();
+      table.boolean("playing").notNullable();
 
       table.timestamps();
     });

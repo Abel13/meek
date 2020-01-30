@@ -9,15 +9,13 @@ class RoundSchema extends Schema {
       table.increments();
 
       table
-        .int("match_id")
+        .integer("match_id")
         .unsigned()
         .references("id")
-        .inTable("matches")
-        .onUpdate("CASCADE")
-        .onDelete("CASCADE");
-      table.notNullable().int("round_number");
-      table.notNullable().int("total_turns");
-      table.notNullable().int("shackle"); //1 to 13
+        .inTable("matches");
+      table.integer("round_number").notNullable();
+      table.integer("total_turns").notNullable();
+      table.integer("shackle").notNullable(); //1 to 13
 
       table.timestamps();
     });

@@ -12,18 +12,14 @@ class UserTurnSchema extends Schema {
         .integer("user_id")
         .unsigned()
         .references("id")
-        .inTable("users")
-        .onUpdate("CASCADE")
-        .onDelete("NO ACTION");
+        .inTable("users");
       table
         .integer("turn_id")
         .unsigned()
         .references("id")
-        .inTable("turns")
-        .onUpdate("CASCADE")
-        .onDelete("NO ACTION");
-      table.notNullable().int("turn_position");
-      table.notNullable().int("card"); //1 to 52
+        .inTable("turns");
+      table.integer("turn_position").notNullable();
+      table.integer("card").notNullable(); //1 to 52
 
       table.timestamps();
     });
