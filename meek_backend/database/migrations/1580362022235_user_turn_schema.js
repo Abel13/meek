@@ -7,15 +7,16 @@ class UserTurnSchema extends Schema {
   up() {
     this.create("user_turns", table => {
       table.increments();
-
       table
         .integer("user_id")
         .unsigned()
+        .notNullable()
         .references("id")
         .inTable("users");
       table
         .integer("turn_id")
         .unsigned()
+        .notNullable()
         .references("id")
         .inTable("turns");
       table.integer("turn_position").notNullable();

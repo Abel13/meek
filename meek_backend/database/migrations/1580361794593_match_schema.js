@@ -7,10 +7,11 @@ class MatchSchema extends Schema {
   up() {
     this.create("matches", table => {
       table.increments();
-
+      table.string("secure_id").notNullable();
       table
         .integer("user_id")
         .unsigned()
+        .notNullable()
         .references("id")
         .inTable("users");
       table.string("name").notNullable();

@@ -1,3 +1,5 @@
+"use strict";
+
 const cardSuit = {
   Clubs: 4,
   Hearts: 3,
@@ -361,4 +363,15 @@ const cards = [
   }
 ];
 
-module.exports = cards;
+// module.exports = {
+//   getCards: cards(() => Math.random() - 0.5)
+// };
+
+class Cards {
+  get shuffledCards() {
+    const shuffle = cards.sort(() => Math.random() - 0.5);
+    return shuffle;
+  }
+}
+
+module.exports = Cards;

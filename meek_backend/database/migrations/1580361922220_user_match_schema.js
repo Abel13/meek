@@ -7,19 +7,20 @@ class UserMatchSchema extends Schema {
   up() {
     this.create("user_matches", table => {
       table.increments();
-
       table
         .integer("user_id")
         .unsigned()
+        .notNullable()
         .references("id")
         .inTable("users");
       table
         .integer("match_id")
         .unsigned()
+        .notNullable()
         .references("id")
         .inTable("matches");
       table.integer("life_bar").notNullable();
-      table.boolean("playing").notNullable();
+      table.boolean("playing").notNullable(); //Jogador ainda está na partida?
 
       table.timestamps();
     });

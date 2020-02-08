@@ -7,21 +7,20 @@ class UserRoundSchema extends Schema {
   up() {
     this.create("user_rounds", table => {
       table.increments();
-
       table
         .integer("user_id")
         .unsigned()
+        .notNullable()
         .references("id")
-        .inTable("users")
-        .onUpdate("CASCADE")
-        .onDelete("NO ACTION");
+        .inTable("users");
       table
         .integer("round_id")
         .unsigned()
+        .notNullable()
         .references("id")
         .inTable("rounds");
       table.integer("bet").notNullable();
-      table.integer("round_score").notNullable();
+      table.integer("round_score").unsigned();
 
       table.timestamps();
     });

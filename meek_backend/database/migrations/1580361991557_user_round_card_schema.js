@@ -7,20 +7,19 @@ class UserRoundCardSchema extends Schema {
   up() {
     this.create("user_round_cards", table => {
       table.increments();
-
       table
         .integer("user_id")
         .unsigned()
+        .notNullable()
         .references("id")
         .inTable("users");
       table
         .integer("round_id")
         .unsigned()
+        .notNullable()
         .references("id")
         .inTable("rounds");
       table.integer("card");
-
-      table.timestamps();
     });
   }
 

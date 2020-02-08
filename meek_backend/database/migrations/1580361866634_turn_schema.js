@@ -7,15 +7,17 @@ class TurnSchema extends Schema {
   up() {
     this.create("turns", table => {
       table.increments();
-
+      table.string("secure_id").notNullable();
       table
         .integer("round_id")
         .unsigned()
+        .notNullable()
         .references("id")
         .inTable("rounds");
       table
         .integer("winner_id")
         .unsigned()
+        .notNullable()
         .references("id")
         .inTable("users");
       table.integer("turn_number");

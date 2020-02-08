@@ -7,15 +7,16 @@ class RoundSchema extends Schema {
   up() {
     this.create("rounds", table => {
       table.increments();
-
+      table.string("secure_id").notNullable();
       table
         .integer("match_id")
         .unsigned()
+        .notNullable()
         .references("id")
         .inTable("matches");
       table.integer("round_number").notNullable();
       table.integer("total_turns").notNullable();
-      table.integer("shackle").notNullable(); //1 to 13
+      table.integer("shackle"); //1 to 13
 
       table.timestamps();
     });

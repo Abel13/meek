@@ -1,93 +1,72 @@
-'use strict'
+"use strict";
 
-/** @typedef {import('@adonisjs/framework/src/Request')} Request */
-/** @typedef {import('@adonisjs/framework/src/Response')} Response */
-/** @typedef {import('@adonisjs/framework/src/View')} View */
+const Match = use("App/Models/Match");
+const UserMatch = use("App/Models/UserMatch");
+const User = use("App/Models/User");
 
-/**
- * Resourceful controller for interacting with matches
- */
 class MatchController {
-  /**
-   * Show a list of all matches.
-   * GET matches
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async index ({ request, response, view }) {
+  async index({ request, response, view }) {
+    const matches = await Match.all();
+
+    return matches;
   }
 
-  /**
-   * Render a form to be used for creating a new match.
-   * GET matches/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async create ({ request, response, view }) {
+  async create({ request, response, view }) {}
+
+  async store({ request, response, auth }) {
+    const data = request.only(["name", "date"]);
+
+    const match = await Match.create({ ...data, user_id: auth.user.id });
+    await UserMatch.create({
+      match_id: match.id,
+      life_bar: 5,
+      playing: true,
+      user_id: auth.user.id
+    });
+
+    return match;
   }
 
-  /**
-   * Create/save a new match.
-   * POST matches
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async store ({ request, response }) {
+  async storeUserMatch({ request, response, auth }) {
+    const data = request.only(["match_id"]);
+
+    const match = await Match.query()
+      .where("secure_id", data.match_id)
+      .firstOrFail();
+
+    const match_id = match.id;
+
+    const userMatch = await UserMatch.create({
+      match_id,
+      life_bar: 5,
+      playing: true,
+      user_id: auth.user.id
+    });
+
+    return userMatch;
   }
 
-  /**
-   * Display a single match.
-   * GET matches/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async show ({ params, request, response, view }) {
+  async show({ params, request, response, view }) {}
+
+  async showUserMatch({ params, request, response, view }) {
+    const match = await Match.query()
+      .where("secure_id", params.match_id)
+      .firstOrFail();
+
+    const usersMatch = await User.query()
+      .select("users.secure_id", "username", "life_bar", "playing")
+      .where("match_id", match.id)
+      .innerJoin("user_matches", "user_id", "users.id")
+      .fetch();
+
+    return usersMatch;
   }
 
-  /**
-   * Render a form to update an existing match.
-   * GET matches/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async edit ({ params, request, response, view }) {
-  }
+  async edit({ params, request, response, view }) {}
 
-  /**
-   * Update match details.
-   * PUT or PATCH matches/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async update ({ params, request, response }) {
-  }
+  async update({ params, request, response }) {}
 
-  /**
-   * Delete a match with id.
-   * DELETE matches/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async destroy ({ params, request, response }) {
-  }
+  async destroy({ params, request, response }) {}
 }
 
-module.exports = MatchController
+module.exports = MatchController;
