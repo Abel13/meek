@@ -17,7 +17,6 @@ class TurnSchema extends Schema {
       table
         .integer("winner_id")
         .unsigned()
-        .notNullable()
         .references("id")
         .inTable("users");
       table.integer("turn_number");

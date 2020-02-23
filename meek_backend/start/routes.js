@@ -23,4 +23,7 @@ Route.group(() => {
   //Round
   Route.resource("rounds", "RoundController").apiOnly();
   Route.post("bet", "RoundController.storeUserRound");
+
+  //Turn
+  Route.resource("turns", "TurnController").apiOnly();
 }).middleware(["auth"]);

@@ -4,6 +4,8 @@
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
 const Turn = use("App/Models/Turn");
+const Round = use("App/Models/Round");
+const Database = use("Database");
 
 /**
  * Resourceful controller for interacting with turns
@@ -31,15 +33,76 @@ class TurnController {
    */
   async create({ request, response, view }) {}
 
-  /**
-   * Create/save a new turn.
-   * POST turns
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async store({ request, response }) {}
+  async store({ request, response }) {
+    const data = request.only(["round_id"]);
+
+    //Get Round
+    const round = await Round.query()
+      .where("secure_id", data.round_id)
+      .firstOrFail();
+
+    //Get how many turns has been played
+    const turns = await Turn.query()
+      .where("round_id", round.id)
+      .count("round_id as count")
+      .first();
+    const turn_number = turns.count + 1;
+
+    if (turn_number > round.total_turns) {
+      return response
+        .status(400)
+        .json({ error: "Invalid turn, go to next round!" });
+    }
+
+    //creates the new turn
+    const turn = await Turn.create({
+      round_id: round.id,
+      turn_number
+    });
+
+    const matchPlayers = await Database.from("user_matches")
+      .where("match_id", round.match_id)
+      .andWhere("playing", true);
+
+    //Get the last turn winner
+    const lastTurn = await Turn.query()
+      .where("turn_number", turns.count)
+      .where("round_id", round.id)
+      .first();
+
+    let sequence = [];
+    if (lastTurn) {
+      //Get sequence to play
+      const nextPlayers = [];
+      const firstPlayers = [];
+      let winnerFound = false;
+      matchPlayers.forEach(element => {
+        if (element.user_id !== lastTurn.winner_id && !winnerFound) {
+          nextPlayers.push(element);
+        } else {
+          if (element.user_id === lastTurn.winner_id) winnerFound = true;
+          firstPlayers.push(element);
+        }
+      });
+      sequence = firstPlayers.concat(nextPlayers);
+    } else {
+      sequence = matchPlayers;
+    }
+
+    //Create User Turn
+    const userTurns = [];
+    for (let index = 0; index < sequence.length; index++) {
+      const userTurn = {
+        user_id: sequence[index].user_id,
+        turn_id: turn.id,
+        turn_position: index + 1
+      };
+      userTurns.push(userTurn);
+    }
+    await Database.from("user_turns").insert(userTurns);
+
+    return turn;
+  }
 
   /**
    * Display a single turn.

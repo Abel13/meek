@@ -20,6 +20,8 @@ class UserRoundCardSchema extends Schema {
         .references("id")
         .inTable("rounds");
       table.integer("card");
+
+      table.timestamps();
     });
   }
 

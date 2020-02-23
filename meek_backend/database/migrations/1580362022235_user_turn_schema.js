@@ -20,7 +20,7 @@ class UserTurnSchema extends Schema {
         .references("id")
         .inTable("turns");
       table.integer("turn_position").notNullable();
-      table.integer("card").notNullable(); //1 to 52
+      table.integer("card");
 
       table.timestamps();
     });

@@ -49,21 +49,26 @@ class RoundController {
     const round_number = round_count[0].round + 1;
 
     //get match players
-    const players = await UsersMatch.query()
+    const matchPlayers = await Database.from("user_matches")
       .where("match_id", match.id)
-      .where("playing", true)
-      .fetch();
+      .andWhere("playing", true);
+
+    const numberOfPlayers = matchPlayers.length;
 
     //select the number of turns
     const rest = round_number % 10;
-    const total_turns = rest >= 0 && rest <= 5 ? rest + 1 : 11 - rest;
+    const total_turns =
+      numberOfPlayers === 2 ? 3 : rest >= 0 && rest <= 5 ? rest + 1 : 11 - rest;
 
     //select a card to shackle
     const min = Math.ceil(0);
     const max = Math.floor(52);
     const selectedShackle = Math.floor(Math.random() * (max - min) + min);
+
+    //shuffle cards
     const cards = [...new Cards().shuffledCards];
 
+    //remove the shackle from deck
     const selectedCard = await cards.splice(selectedShackle, 1);
     const shackle = selectedCard[0].number === 13 ? 1 : selectedCard[0].number;
 
@@ -75,19 +80,20 @@ class RoundController {
       shackle
     });
 
+    //dealing the cards
     const playerCards = [];
-    players.rows.forEach(element => {
+    matchPlayers.forEach(element => {
       for (let index = 0; index < total_turns; index++) {
         const card = cards.pop();
         const ruc = {
-          user_id: element.id,
+          user_id: element.user_id,
           round_id: round.id,
           card: card.id
         };
+        console.log(ruc);
         playerCards.push(ruc);
       }
     });
-
     await Database.from("user_round_cards").insert(playerCards);
 
     return round;
