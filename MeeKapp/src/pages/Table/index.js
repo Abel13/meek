@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Image, Text, Button } from 'react-native';
+import { View, StyleSheet, Image, Text, Button, StatusBar } from 'react-native';
 import Card from '../../components/Card';
 
 import { cards } from '../../components/Card/cards';
@@ -66,6 +66,7 @@ export default function Table() {
 
   return (
     <>
+      <StatusBar hidden />
       <View style={styles.container}>
         <View style={styles.room}>
           <View style={styles.table}>

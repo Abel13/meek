@@ -6,8 +6,8 @@ import Table from '../pages/Table';
 
 export default createAppContainer(
   createSwitchNavigator({
-    Table,
     SignIn,
+    Table,
     SignUp,
   })
 );
