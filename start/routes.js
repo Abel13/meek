@@ -2,6 +2,10 @@
 
 const Route = use("Route");
 
+Route.get("/", ({ request }) => {
+  return { ok: "ok" };
+});
+
 //Users
 Route.post("users", "UserController.store").validator("User");
 
