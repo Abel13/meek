@@ -1,0 +1,4 @@
+{
+  "appService.defaultWebAppToDeploy": "/subscriptions/9b2aa10c-0d6f-4cbf-8056-c664f3788101/resourceGroups/Default/providers/Microsoft.Web/sites/MeeK",
+  "appService.deploySubpath": ""
+}
