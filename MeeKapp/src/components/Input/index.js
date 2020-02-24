@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { forwardRef, useState, useEffect } from 'react';
 import { View, TextInput, StyleSheet } from 'react-native';
+import PropTypes from 'prop-types';
 
-// import { Container } from './styles';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+
 const styles = StyleSheet.create({
   container: {
     margin: 10,
@@ -15,27 +18,46 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 15,
+    marginHorizontal: 5,
     color: '#000',
   },
 });
 
-export default function Input({
-  placeholder,
-  password,
-  maxLenght,
-  autoCompleteType,
-  keyboardType,
-}) {
+function Input({ secureTextEntry, style, icon, ...rest }, ref) {
+  const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    setShowPassword(secureTextEntry);
+  }, [secureTextEntry]);
+
   return (
-    <View style={styles.container}>
+    <View style={[style, styles.container]}>
+      {icon && <Icon name={icon} size={20} color="#2228" />}
       <TextInput
-        keyboardType={keyboardType}
-        autoCompleteType={autoCompleteType}
-        secureTextEntry={password}
-        maxLength={maxLenght}
+        secureTextEntry={showPassword}
+        ref={ref}
         style={styles.input}
-        placeholder={placeholder}
+        {...rest}
       />
+      {secureTextEntry && (
+        <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+          <Icon name="remove-red-eye" size={20} color="#2228" />
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
+
+Input.propTypes = {
+  secureTextEntry: PropTypes.bool,
+  icon: PropTypes.string,
+  style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+};
+
+Input.defaultProps = {
+  secureTextEntry: false,
+  icon: null,
+  style: {},
+};
+
+export default forwardRef(Input);

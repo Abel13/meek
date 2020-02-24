@@ -1,12 +1,13 @@
 import React from 'react';
 import {
   View,
-  TextInput,
   TouchableOpacity,
   Text,
   Image,
   StyleSheet,
+  ActivityIndicator,
 } from 'react-native';
+import PropTypes from 'prop-types';
 
 const styles = StyleSheet.create({
   textContainer: {
@@ -19,25 +20,37 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  text: { color: '#FFF', fontWeight: 'bold', fontSize: 15 },
+  text: { color: '#FFF', fontWeight: 'bold', fontSize: 18 },
   image: {
     width: 150,
-    resizeMode: 'contain',
   },
 });
 
-export default function Input({ placeholder, password, text }) {
+export default function Button({ loading, text, ...rest }) {
   return (
-    <View style={{}}>
-      <TouchableOpacity>
-        <View style={styles.textContainer}>
+    <TouchableOpacity style={{ width: 150, flexDirection: 'row' }} {...rest}>
+      <View style={styles.textContainer}>
+        {loading ? (
+          <ActivityIndicator size="small" color="#FFF" />
+        ) : (
           <Text style={styles.text}>{text}</Text>
-        </View>
-        <Image
-          style={styles.image}
-          source={require('../../../assets/button.png')}
-        />
-      </TouchableOpacity>
-    </View>
+        )}
+      </View>
+      <Image
+        style={styles.image}
+        resizeMode="contain"
+        source={require('../../../assets/button.png')}
+      />
+    </TouchableOpacity>
   );
 }
+
+Button.propTypes = {
+  loading: PropTypes.bool,
+  text: PropTypes.string,
+};
+
+Button.defaultProps = {
+  loading: false,
+  text: 'TEXT',
+};

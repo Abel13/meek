@@ -8,6 +8,8 @@ import {
   Image,
 } from 'react-native';
 
+import Button from '../Button';
+
 const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
@@ -38,7 +40,13 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function CustomModal({ children, visible, closeModal, title }) {
+export default function CustomModal({
+  children,
+  visible,
+  closeModal,
+  title,
+  confirmText,
+}) {
   return (
     <View style={{ flex: 1, justifyContent: 'center' }}>
       <Modal
@@ -59,15 +67,7 @@ export default function CustomModal({ children, visible, closeModal, title }) {
                   alignItems: 'center',
                 }}
               >
-                <TouchableOpacity onPress={() => closeModal()}>
-                  <Image
-                    style={{
-                      width: 150,
-                      resizeMode: 'contain',
-                    }}
-                    source={require('../../../assets/betButton.png')}
-                  />
-                </TouchableOpacity>
+                <Button text={confirmText} onPress={() => closeModal()} />
               </View>
             </View>
           </View>

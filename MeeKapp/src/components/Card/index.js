@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function App({ onPress, data, direction }) {
+export default function App({ data, direction, ...rest }) {
   const [symbol, setSymbol] = useState('');
   const [suitPath, setSuitPath] = useState('');
   const [transform, setTransform] = useState('');
@@ -162,10 +162,7 @@ export default function App({ onPress, data, direction }) {
           </View>
         </View>
       ) : (
-        <TouchableOpacity
-          onPress={() => onPress()}
-          style={[transform, styles.container]}
-        >
+        <TouchableOpacity {...rest} style={[transform, styles.container]}>
           <View style={styles.faceUp}>
             <View style={styles.topSymbol}>
               <Text style={[color, styles.symbol]}>{symbol}</Text>

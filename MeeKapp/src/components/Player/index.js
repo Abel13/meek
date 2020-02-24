@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Image, StyleSheet, Text } from 'react-native';
+import PropTypes from 'prop-types';
 
 // import { Container } from './styles';
 
@@ -18,15 +19,8 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function Player(props) {
-  const [user, setUser] = useState();
+export default function Player({ user }) {
   const [heart] = useState('♥');
-
-  useEffect(() => {
-    if (props.user) {
-      setUser(props.user);
-    }
-  }, [props]);
 
   return (
     <>
@@ -63,3 +57,15 @@ export default function Player(props) {
     </>
   );
 }
+
+Player.propTypes = {
+  user: PropTypes.object,
+};
+
+Player.defaultProps = {
+  user: {
+    email: '',
+    username: '',
+    life: 0,
+  },
+};

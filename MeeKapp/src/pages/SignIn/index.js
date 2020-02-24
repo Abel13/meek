@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { StyleSheet, Text, View, StatusBar } from 'react-native';
 
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -27,9 +27,12 @@ const styles = StyleSheet.create({
 });
 
 export default function SignIn({ navigation }) {
+  const passwordRef = useRef();
   function createAccount() {
     navigation.navigate('SignUp');
   }
+
+  function handleSubmit() {}
 
   return (
     <>
@@ -37,12 +40,31 @@ export default function SignIn({ navigation }) {
       <View style={styles.container}>
         <View style={styles.titleContainer}>
           <Text style={styles.title}>LOGIN</Text>
-          <View style={{ width: '100%' }}>
-            <Input placeholder="Email" />
-            <Input password placeholder="Password" />
+          <View style={{ width: '70%' }}>
+            <Input
+              autoCorrect={false}
+              placeholder="E-Mail"
+              icon="mail-outline"
+              autoCapitalize="none"
+              returnKeyType="next"
+              onSubmitEditing={() => passwordRef.current.focus()}
+            />
+            <Input
+              secureTextEntry
+              placeholder="Password"
+              icon="lock-outline"
+              ref={passwordRef}
+              returnKeyType="send"
+              onSubmitEditing={handleSubmit}
+            />
           </View>
 
-          <Button />
+          <Button
+            text="LOGIN"
+            onPress={() => {
+              navigation.navigate('Menu');
+            }}
+          />
           <TouchableOpacity
             onPress={() => {
               createAccount();

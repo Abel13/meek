@@ -315,6 +315,7 @@ export default function Table() {
           title="QUAL SUA APOSTA?"
           closeModal={() => closeModal()}
           visible={modalBetVisible}
+          confirmText="APOSTAR"
         >
           <Bet max={5} blocked={1} />
         </Modal>
