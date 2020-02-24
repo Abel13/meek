@@ -1,7 +1,11 @@
 import React, { useRef } from 'react';
 import { StyleSheet, Text, View, StatusBar } from 'react-native';
 
+import { useSelector, useDispatch } from 'react-redux';
+
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import * as AuthActions from '../../store/modules/auth/actions';
+
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 
@@ -27,12 +31,18 @@ const styles = StyleSheet.create({
 });
 
 export default function SignIn({ navigation }) {
+  const dispatch = useDispatch();
+  const players = useSelector(state => state.players);
+
   const passwordRef = useRef();
+
   function createAccount() {
     navigation.navigate('SignUp');
   }
 
-  function handleSubmit() {}
+  function handleSubmit({ email, password }) {
+    dispatch(AuthActions.signInRequest(email, password));
+  }
 
   return (
     <>
