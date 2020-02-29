@@ -14,8 +14,15 @@ class MatchSchema extends Schema {
         .notNullable()
         .references("id")
         .inTable("users");
-      table.string("name").notNullable();
+      table
+        .string("name")
+        .unique()
+        .notNullable();
       table.dateTime("date").notNullable();
+      table
+        .boolean("active")
+        .notNullable()
+        .defaultTo(true);
       table.timestamps();
     });
   }

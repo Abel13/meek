@@ -90,7 +90,6 @@ class RoundController {
           round_id: round.id,
           card: card.id
         };
-        console.log(ruc);
         playerCards.push(ruc);
       }
     });

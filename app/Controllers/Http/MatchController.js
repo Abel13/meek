@@ -6,7 +6,11 @@ const User = use("App/Models/User");
 
 class MatchController {
   async index({ request, response, view }) {
-    const matches = await Match.all();
+    const matches = await Match.query()
+      .select("matches.secure_id", "username", "name")
+      .innerJoin("users", "user_id", "users.id")
+      .where("active", true)
+      .fetch();
 
     return matches;
   }
@@ -14,9 +18,13 @@ class MatchController {
   async create({ request, response, view }) {}
 
   async store({ request, response, auth }) {
-    const data = request.only(["name", "date"]);
+    const data = request.only(["name"]);
 
-    const match = await Match.create({ ...data, user_id: auth.user.id });
+    const match = await Match.create({
+      ...data,
+      user_id: auth.user.id,
+      date: new Date()
+    });
     await UserMatch.create({
       match_id: match.id,
       life_bar: 5,
@@ -24,7 +32,7 @@ class MatchController {
       user_id: auth.user.id
     });
 
-    return match;
+    return { match: { secure_id: match.secure_id } };
   }
 
   async storeUserMatch({ request, response, auth }) {
@@ -43,7 +51,7 @@ class MatchController {
       user_id: auth.user.id
     });
 
-    return userMatch;
+    return { match: { secure_id: match.secure_id } };
   }
 
   async show({ params, request, response, view }) {}
