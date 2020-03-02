@@ -20,6 +20,10 @@ class MatchSchema extends Schema {
         .notNullable();
       table.dateTime("date").notNullable();
       table
+        .boolean("started")
+        .notNullable()
+        .defaultTo(false);
+      table
         .boolean("active")
         .notNullable()
         .defaultTo(true);

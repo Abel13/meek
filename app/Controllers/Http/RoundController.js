@@ -55,6 +55,10 @@ class RoundController {
 
     const numberOfPlayers = matchPlayers.length;
 
+    if (numberOfPlayers <= 1) {
+      return response.status(400).json({ error: "No players enought!" });
+    }
+
     //select the number of turns
     const rest = round_number % 10;
     const total_turns =
@@ -95,7 +99,14 @@ class RoundController {
     });
     await Database.from("user_round_cards").insert(playerCards);
 
-    return round;
+    return {
+      round: {
+        round_number: round.round_number,
+        total_turns: round.total_turns,
+        shackle: round.shackle,
+        secure_id: round.secure_id
+      }
+    };
   }
 
   async storeUserRound({ request, response, auth }) {
@@ -123,7 +134,24 @@ class RoundController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show({ params, request, response, view }) {}
+  async show({ params, request, response, view }) {
+    const match = await Match.query()
+      .where("secure_id", params.id)
+      .firstOrFail();
+
+    const round = await Round.query()
+      .where("match_id", match.id)
+      .last();
+
+    return {
+      round: {
+        round_number: round.round_number,
+        total_turns: round.total_turns,
+        shackle: round.shackle,
+        secure_id: round.secure_id
+      }
+    };
+  }
 
   /**
    * Render a form to update an existing round.

@@ -7,7 +7,7 @@ const User = use("App/Models/User");
 class MatchController {
   async index({ request, response, view }) {
     const matches = await Match.query()
-      .select("matches.secure_id", "username", "name")
+      .select("matches.secure_id", "user_id", "username", "name")
       .innerJoin("users", "user_id", "users.id")
       .where("active", true)
       .fetch();
@@ -25,14 +25,18 @@ class MatchController {
       user_id: auth.user.id,
       date: new Date()
     });
+    const user = await User.query()
+      .where("id", auth.user.id)
+      .firstOrFail();
+
     await UserMatch.create({
       match_id: match.id,
       life_bar: 5,
       playing: true,
-      user_id: auth.user.id
+      user_id: user.id
     });
 
-    return { match: { secure_id: match.secure_id } };
+    return { match: { secure_id: match.secure_id, user_id: user.secure_id } };
   }
 
   async storeUserMatch({ request, response, auth }) {
@@ -41,17 +45,30 @@ class MatchController {
     const match = await Match.query()
       .where("secure_id", data.match_id)
       .firstOrFail();
+    const owner = await User.query()
+      .where("id", match.user_id)
+      .firstOrFail();
+    const user = await User.query()
+      .where("id", auth.user.id)
+      .first();
 
-    const match_id = match.id;
+    const userMatch = await UserMatch.query()
+      .where("user_id", user.id)
+      .andWhere("match_id", match.id)
+      .first();
 
-    const userMatch = await UserMatch.create({
-      match_id,
-      life_bar: 5,
-      playing: true,
-      user_id: auth.user.id
-    });
+    if (!userMatch) {
+      const match_id = match.id;
 
-    return { match: { secure_id: match.secure_id } };
+      await UserMatch.create({
+        match_id,
+        life_bar: 5,
+        playing: true,
+        user_id: user.id
+      });
+    }
+
+    return { match: { secure_id: match.secure_id, user_id: owner.secure_id } };
   }
 
   async show({ params, request, response, view }) {}
@@ -72,7 +89,15 @@ class MatchController {
 
   async edit({ params, request, response, view }) {}
 
-  async update({ params, request, response }) {}
+  async update({ params, request, response }) {
+    const secure_id = params.id;
+
+    await Match.query()
+      .where("secure_id", secure_id)
+      .update({ started: true });
+
+    return { match: { secure_id, started: true } };
+  }
 
   async destroy({ params, request, response }) {}
 }
