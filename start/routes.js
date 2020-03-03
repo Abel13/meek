@@ -2,8 +2,8 @@
 
 const Route = use("Route");
 
-Route.get("/", ({ request }) => {
-  return { ok: "ok" };
+Route.get("/", ({ request, response }) => {
+  return response.json({ ok: "OK" });
 });
 
 //Users
