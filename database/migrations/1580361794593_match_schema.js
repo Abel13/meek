@@ -27,6 +27,7 @@ class MatchSchema extends Schema {
         .boolean("active")
         .notNullable()
         .defaultTo(true);
+
       table.timestamps();
     });
   }
