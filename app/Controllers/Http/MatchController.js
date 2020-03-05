@@ -3,6 +3,8 @@
 const Match = use("App/Models/Match");
 const UserMatch = use("App/Models/UserMatch");
 const User = use("App/Models/User");
+const Round = use("App/Models/Round");
+const Cards = use("App/engine/cards");
 
 class MatchController {
   async index({ request, response, view }) {
@@ -92,9 +94,49 @@ class MatchController {
   async update({ params, request, response }) {
     const secure_id = params.id;
 
-    await Match.query()
+    const match = await Match.query()
       .where("secure_id", secure_id)
       .update({ started: true });
+
+    //get match players
+    const matchPlayers = await Database.from("user_matches")
+      .where("match_id", match.id)
+      .andWhere("playing", true);
+
+    //select a card to shackle
+    const min = Math.ceil(0);
+    const max = Math.floor(52);
+    const selectedShackle = Math.floor(Math.random() * (max - min) + min);
+
+    //shuffle cards
+    const cards = [...new Cards().shuffledCards];
+
+    //remove the shackle from deck
+    const selectedCard = await cards.splice(selectedShackle, 1);
+    const shackle = selectedCard[0].number === 13 ? 1 : selectedCard[0].number;
+
+    //create round
+    await Round.create({
+      match_id: match.id,
+      round_number: 1,
+      total_turns: 1,
+      shackle
+    });
+
+    //dealing the cards
+    const playerCards = [];
+    matchPlayers.forEach(element => {
+      for (let index = 0; index < total_turns; index++) {
+        const card = cards.pop();
+        const ruc = {
+          user_id: element.user_id,
+          round_id: round.id,
+          card: card.id
+        };
+        playerCards.push(ruc);
+      }
+    });
+    await Database.from("user_round_cards").insert(playerCards);
 
     return { match: { secure_id, started: true } };
   }

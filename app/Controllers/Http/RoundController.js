@@ -55,14 +55,14 @@ class RoundController {
 
     const numberOfPlayers = matchPlayers.length;
 
-    if (numberOfPlayers <= 1) {
+    if (numberOfPlayers < 3) {
       return response.status(400).json({ error: "No players enought!" });
     }
 
     //select the number of turns
     const rest = round_number % 10;
     const total_turns =
-      numberOfPlayers === 2 ? 3 : rest >= 0 && rest <= 5 ? rest + 1 : 11 - rest;
+      numberOfPlayers === rest >= 0 && rest <= 5 ? rest + 1 : 11 - rest;
 
     //select a card to shackle
     const min = Math.ceil(0);
