@@ -8,7 +8,7 @@ class UserController {
 
     const user = await User.create(data);
 
-    return user;
+    return { user: { secure_id: user.secure_id } };
   }
 }
 
