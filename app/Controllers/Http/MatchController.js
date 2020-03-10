@@ -4,7 +4,9 @@ const Match = use("App/Models/Match");
 const UserMatch = use("App/Models/UserMatch");
 const User = use("App/Models/User");
 const Round = use("App/Models/Round");
+const Turn = use("App/Models/Turn");
 const Cards = use("App/engine/cards");
+const Database = use("Database");
 
 class MatchController {
   async index({ request, response, view }) {
@@ -94,11 +96,15 @@ class MatchController {
   async update({ params, request, response }) {
     const secure_id = params.id;
 
-    const match = await Match.query()
+    await Match.query()
       .where("secure_id", secure_id)
       .update({ started: true });
 
-    //get match players
+    const match = await Match.query()
+      .where("secure_id", secure_id)
+      .firstOrFail();
+
+    // get match players
     const matchPlayers = await Database.from("user_matches")
       .where("match_id", match.id)
       .andWhere("playing", true);
@@ -112,21 +118,31 @@ class MatchController {
     const cards = [...new Cards().shuffledCards];
 
     //remove the shackle from deck
-    const selectedCard = await cards.splice(selectedShackle, 1);
-    const shackle = selectedCard[0].number === 13 ? 1 : selectedCard[0].number;
+    const selectedCard = await cards.splice(selectedShackle, 1)[0];
+    const shackle = selectedCard.id;
 
     //create round
-    await Round.create({
+    const round = await Round.create({
       match_id: match.id,
       round_number: 1,
       total_turns: 1,
       shackle
     });
 
+    //adding users to round
+    const usersRound = [];
+    matchPlayers.forEach(element => {
+      for (let index = 0; index < 1; index++) {
+        const ur = { user_id: element.user_id, round_id: round.id };
+        usersRound.push(ur);
+      }
+    });
+    await Database.from("user_rounds").insert(usersRound);
+
     //dealing the cards
     const playerCards = [];
     matchPlayers.forEach(element => {
-      for (let index = 0; index < total_turns; index++) {
+      for (let index = 0; index < 1; index++) {
         const card = cards.pop();
         const ruc = {
           user_id: element.user_id,
@@ -137,6 +153,31 @@ class MatchController {
       }
     });
     await Database.from("user_round_cards").insert(playerCards);
+
+    //creates the new turn
+    const turn = await Turn.create({
+      round_id: round.id,
+      turn_number: 1
+    });
+
+    //Create User Turn
+    const userTurns = [];
+    for (let index = 0; index < matchPlayers.length; index++) {
+      const { card } = playerCards.filter(element => {
+        if (element.user_id === matchPlayers[index].user_id) {
+          return element;
+        }
+      })[0];
+
+      const userTurn = {
+        user_id: matchPlayers[index].user_id,
+        turn_id: turn.id,
+        turn_position: index + 1,
+        card
+      };
+      userTurns.push(userTurn);
+    }
+    await Database.from("user_turns").insert(userTurns);
 
     return { match: { secure_id, started: true } };
   }

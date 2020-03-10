@@ -32,4 +32,5 @@ Route.group(() => {
 
   //Turn
   Route.resource("turns", "TurnController").apiOnly();
+  Route.resource("usercard", "PlayedCardsController").apiOnly();
 }).middleware(["auth"]);
