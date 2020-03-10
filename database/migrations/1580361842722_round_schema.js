@@ -16,7 +16,7 @@ class RoundSchema extends Schema {
         .inTable("matches");
       table.integer("round_number").notNullable();
       table.integer("total_turns").notNullable();
-      table.integer("shackle"); //1 to 13
+      table.integer("shackle"); // 1 a 53
 
       table.timestamps();
     });

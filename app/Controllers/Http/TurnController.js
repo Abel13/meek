@@ -20,7 +20,11 @@ class TurnController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index({ request, response, view }) {}
+  async index({ request, response, view }) {
+    const actualPlayer = 1;
+
+    return { actualPlayer };
+  }
 
   /**
    * Render a form to be used for creating a new turn.
@@ -113,7 +117,22 @@ class TurnController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show({ params, request, response, view }) {}
+  async show({ params, request, response, view }) {
+    const round = await Round.query()
+      .where("secure_id", params.id)
+      .firstOrFail();
+
+    const turn = await Turn.query()
+      .where("round_id", round.id)
+      .last();
+
+    return {
+      turn: {
+        turn_number: turn.turn_number,
+        secure_id: turn.secure_id
+      }
+    };
+  }
 
   /**
    * Render a form to update an existing turn.

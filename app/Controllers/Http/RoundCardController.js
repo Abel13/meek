@@ -10,14 +10,30 @@ class RoundCardController {
       .where("secure_id", params.id)
       .firstOrFail();
 
-    const userCards = await await Database.from("user_round_cards")
+    const userCards = await Database.from("user_round_cards")
+      .select("card")
       .where("user_id", auth.user.id)
       .andWhere("round_id", round.id);
 
-    const cards = [...new Cards().allCards];
+    const turnsCards = await Database.from("user_turns")
+      .select("card")
+      .innerJoin("turns", "turn_id", "turns.id")
+      .where("round_id", round.id)
+      .andWhere("user_id", auth.user.id);
 
-    const myCards = userCards.map(element => {
-      return cards[element.card];
+    // removing played cards in all turns from this round
+    let myCards = [];
+    userCards.forEach(myCard => {
+      let played = false;
+      turnsCards.forEach(playedCard => {
+        if (playedCard.card === myCard.card) {
+          played = true;
+          return;
+        }
+      });
+      if (!played) {
+        myCards.push(myCard);
+      }
     });
 
     return myCards;

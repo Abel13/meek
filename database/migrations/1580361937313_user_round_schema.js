@@ -19,7 +19,7 @@ class UserRoundSchema extends Schema {
         .notNullable()
         .references("id")
         .inTable("rounds");
-      table.integer("bet").notNullable();
+      table.integer("bet");
       table.integer("round_score").unsigned();
 
       table.timestamps();
