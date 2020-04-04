@@ -4,7 +4,10 @@
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
 const Round = use("App/Models/Round");
+
 const Match = use("App/Models/Match");
+const MatchService = use("App/Services/MatchService");
+
 const Cards = use("App/engine/cards");
 const UsersMatch = use("App/models/UserMatch");
 const UserRound = use("App/models/UserRound");
@@ -38,9 +41,7 @@ class RoundController {
 
   async store({ request, response }) {
     const data = request.only(["match_id"]);
-    const match = await Match.query()
-      .where("secure_id", data.match_id)
-      .firstOrFail();
+    const match = await MatchService.selectMatch(data.match_id);
 
     //get actual round
     const round_count = await Round.query()
@@ -81,18 +82,18 @@ class RoundController {
       match_id: match.id,
       round_number,
       total_turns,
-      shackle
+      shackle,
     });
 
     //dealing the cards
     const playerCards = [];
-    matchPlayers.forEach(element => {
+    matchPlayers.forEach((element) => {
       for (let index = 0; index < total_turns; index++) {
         const card = cards.pop();
         const ruc = {
           user_id: element.user_id,
           round_id: round.id,
-          card: card.id
+          card: card.id,
         };
         playerCards.push(ruc);
       }
@@ -104,25 +105,9 @@ class RoundController {
         round_number: round.round_number,
         total_turns: round.total_turns,
         shackle: round.shackle,
-        secure_id: round.secure_id
-      }
+        secure_id: round.secure_id,
+      },
     };
-  }
-
-  async storeUserRound({ request, response, auth }) {
-    const data = request.only(["round_id", "bet"]);
-
-    const round = await Round.query()
-      .where("secure_id", data.round_id)
-      .firstOrFail();
-
-    const userRound = await UserRound.create({
-      user_id: auth.user.id,
-      round_id: round.id,
-      bet: data.bet
-    });
-
-    return userRound;
   }
 
   /**
@@ -135,21 +120,17 @@ class RoundController {
    * @param {View} ctx.view
    */
   async show({ params, request, response, view }) {
-    const match = await Match.query()
-      .where("secure_id", params.id)
-      .firstOrFail();
+    const match = await MatchService.selectMatch(params.id);
 
-    const round = await Round.query()
-      .where("match_id", match.id)
-      .last();
+    const round = await Round.query().where("match_id", match.id).last();
 
     return {
       round: {
         round_number: round.round_number,
         total_turns: round.total_turns,
         shackle: round.shackle,
-        secure_id: round.secure_id
-      }
+        secure_id: round.secure_id,
+      },
     };
   }
 
@@ -172,7 +153,20 @@ class RoundController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update({ params, request, response }) {}
+  async update({ params, request, response, auth }) {
+    const { bet } = request.only(["bet"]);
+
+    const round = await Round.query()
+      .where("secure_id", params.id)
+      .firstOrFail();
+
+    await UserRound.query()
+      .where("round_id", round.id)
+      .andWhere("user_id", auth.user.id)
+      .update({ bet });
+
+    return { round: round.secure_id, user: auth.user.secure_id, bet };
+  }
 
   /**
    * Delete a round with id.

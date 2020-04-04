@@ -20,11 +20,7 @@ class TurnController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index({ request, response, view }) {
-    const actualPlayer = 1;
-
-    return { actualPlayer };
-  }
+  async index({ request, response, view }) {}
 
   /**
    * Render a form to be used for creating a new turn.

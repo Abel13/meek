@@ -1,6 +1,8 @@
 "use strict";
 
 const Match = use("App/Models/Match");
+const MatchService = use("App/Services/MatchService");
+
 const UserMatch = use("App/Models/UserMatch");
 const User = use("App/Models/User");
 const Round = use("App/Models/Round");
@@ -27,17 +29,15 @@ class MatchController {
     const match = await Match.create({
       ...data,
       user_id: auth.user.id,
-      date: new Date()
+      date: new Date(),
     });
-    const user = await User.query()
-      .where("id", auth.user.id)
-      .firstOrFail();
+    const user = await User.query().where("id", auth.user.id).firstOrFail();
 
     await UserMatch.create({
       match_id: match.id,
       life_bar: 5,
       playing: true,
-      user_id: user.id
+      user_id: user.id,
     });
 
     return { match: { secure_id: match.secure_id, user_id: user.secure_id } };
@@ -46,15 +46,10 @@ class MatchController {
   async storeUserMatch({ request, response, auth }) {
     const data = request.only(["match_id"]);
 
-    const match = await Match.query()
-      .where("secure_id", data.match_id)
-      .firstOrFail();
-    const owner = await User.query()
-      .where("id", match.user_id)
-      .firstOrFail();
-    const user = await User.query()
-      .where("id", auth.user.id)
-      .first();
+    const match = await MatchService.selectMatch(data.match_id);
+
+    const owner = await User.query().where("id", match.user_id).firstOrFail();
+    const user = await User.query().where("id", auth.user.id).first();
 
     const userMatch = await UserMatch.query()
       .where("user_id", user.id)
@@ -68,7 +63,7 @@ class MatchController {
         match_id,
         life_bar: 5,
         playing: true,
-        user_id: user.id
+        user_id: user.id,
       });
     }
 
@@ -78,9 +73,7 @@ class MatchController {
   async show({ params, request, response, view }) {}
 
   async showUserMatch({ params, request, response, view }) {
-    const match = await Match.query()
-      .where("secure_id", params.match_id)
-      .firstOrFail();
+    const match = await MatchService.selectMatch(params.match_id);
 
     const usersMatch = await User.query()
       .select("users.secure_id", "username", "life_bar", "playing")
@@ -88,7 +81,7 @@ class MatchController {
       .innerJoin("user_matches", "user_id", "users.id")
       .fetch();
 
-    return usersMatch;
+    return { players: usersMatch, started: match.started };
   }
 
   async edit({ params, request, response, view }) {}
@@ -96,13 +89,11 @@ class MatchController {
   async update({ params, request, response }) {
     const secure_id = params.id;
 
-    await Match.query()
-      .where("secure_id", secure_id)
-      .update({ started: true });
+    //start match
+    await Match.query().where("secure_id", secure_id).update({ started: true });
 
-    const match = await Match.query()
-      .where("secure_id", secure_id)
-      .firstOrFail();
+    //get match
+    const match = await MatchService.selectMatch(secure_id);
 
     // get match players
     const matchPlayers = await Database.from("user_matches")
@@ -114,24 +105,36 @@ class MatchController {
     const max = Math.floor(52);
     const selectedShackle = Math.floor(Math.random() * (max - min) + min);
 
-    //shuffle cards
-    const cards = [...new Cards().shuffledCards];
+    //shuffle cards and get all cards(as mirror)
+    let cards = [...new Cards().shuffledCards];
+    const allCards = new Cards().allCards;
 
     //remove the shackle from deck
     const selectedCard = await cards.splice(selectedShackle, 1)[0];
     const shackle = selectedCard.id;
+
+    //select the card number that will be the shackle
+    const shackleNumber = selectedCard.number === 13 ? 1 : selectedCard.number;
+
+    //update cards to define the four shacles 14, 15, 16, 17 will be the numbers
+    cards = cards.map((element) => {
+      if (element.number === shackleNumber) {
+        return { ...element, isShackle: true, number: 13 + element.cardSuit };
+      }
+      return element;
+    });
 
     //create round
     const round = await Round.create({
       match_id: match.id,
       round_number: 1,
       total_turns: 1,
-      shackle
+      shackle,
     });
 
     //adding users to round
     const usersRound = [];
-    matchPlayers.forEach(element => {
+    matchPlayers.forEach((element) => {
       for (let index = 0; index < 1; index++) {
         const ur = { user_id: element.user_id, round_id: round.id };
         usersRound.push(ur);
@@ -141,13 +144,13 @@ class MatchController {
 
     //dealing the cards
     const playerCards = [];
-    matchPlayers.forEach(element => {
+    matchPlayers.forEach((element) => {
       for (let index = 0; index < 1; index++) {
         const card = cards.pop();
         const ruc = {
           user_id: element.user_id,
           round_id: round.id,
-          card: card.id
+          card: card.id,
         };
         playerCards.push(ruc);
       }
@@ -157,29 +160,47 @@ class MatchController {
     //creates the new turn
     const turn = await Turn.create({
       round_id: round.id,
-      turn_number: 1
+      turn_number: 1,
     });
 
-    //Create User Turn
+    //Create User Turn and get the turn winner
     const userTurns = [];
+    let bigestCard = {
+      number: 0,
+    };
+    let winner_id = null;
     for (let index = 0; index < matchPlayers.length; index++) {
-      const { card } = playerCards.filter(element => {
+      const { card } = playerCards.filter((element) => {
         if (element.user_id === matchPlayers[index].user_id) {
           return element;
         }
       })[0];
 
+      const playedCard = allCards.find((c) => c.id === card);
+      if (playedCard.number > bigestCard.number) {
+        bigestCard = playedCard;
+        winner_id = matchPlayers[index].user_id;
+      }
       const userTurn = {
         user_id: matchPlayers[index].user_id,
         turn_id: turn.id,
         turn_position: index + 1,
-        card
+        card: card.id,
       };
       userTurns.push(userTurn);
     }
     await Database.from("user_turns").insert(userTurns);
 
-    return { match: { secure_id, started: true } };
+    //update the winner
+    await Turn.query().where("id", turn.id).update({ winner_id });
+
+    return {
+      match: { secure_id, started: true },
+      // shackleNumber,
+      // playerCards,
+      // bigestCard,
+      // winner_id
+    };
   }
 
   async destroy({ params, request, response }) {}
