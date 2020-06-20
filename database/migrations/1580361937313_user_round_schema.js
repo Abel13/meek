@@ -20,7 +20,10 @@ class UserRoundSchema extends Schema {
         .references("id")
         .inTable("rounds");
       table.integer("bet");
-      table.integer("round_score").unsigned();
+      table
+        .integer("round_score")
+        .unsigned()
+        .defaultTo(0);
 
       table.timestamps();
     });

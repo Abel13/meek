@@ -1,18 +1,14 @@
 "use strict";
 
-const User = use("App/Models/User");
+const UserService = use("App/Services/UserService");
 
 class SessionController {
   async store({ request, auth }) {
     const { email, password } = request.all();
-
-    const user = await User.query()
-      .where("email", email)
-      .firstOrFail();
-
-    const { secure_id, username } = user;
-
     const token = await auth.attempt(email, password);
+
+    const user = await UserService.selectUserByEmail(email);
+    const { secure_id, username } = user;
 
     return { token, user: { secure_id, username, email } };
   }

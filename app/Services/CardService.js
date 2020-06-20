@@ -1,10 +1,9 @@
-"use strict";
-
+/**@type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const cardSuit = {
   Clubs: 4,
   Hearts: 3,
   Spade: 2,
-  Diamonds: 1
+  Diamonds: 1,
 };
 
 const cardNumber = {
@@ -21,7 +20,7 @@ const cardNumber = {
   Ace: 11,
   Two: 12,
   Three: 13,
-  Shackle: 14
+  Shackle: 14,
 };
 
 const cardSymbol = {
@@ -37,7 +36,7 @@ const cardSymbol = {
   King: "K",
   Ace: "A",
   Two: "2",
-  Three: "3"
+  Three: "3",
 };
 
 const cards = [
@@ -46,28 +45,28 @@ const cards = [
     number: cardNumber.Ace,
     suit: cardSuit.Clubs,
     symbol: cardSymbol.Ace,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 2,
     number: cardNumber.Ace,
     suit: cardSuit.Hearts,
     symbol: cardSymbol.Ace,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 3,
     number: cardNumber.Ace,
     symbol: cardSymbol.Ace,
     suit: cardSuit.Spade,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 4,
     number: cardNumber.Ace,
     symbol: cardSymbol.Ace,
     suit: cardSuit.Diamonds,
-    isShackle: false
+    isShackle: false,
   },
 
   // 2
@@ -76,28 +75,28 @@ const cards = [
     number: cardNumber.Two,
     symbol: cardSymbol.Two,
     suit: cardSuit.Clubs,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 6,
     number: cardNumber.Two,
     symbol: cardSymbol.Two,
     suit: cardSuit.Hearts,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 7,
     number: cardNumber.Two,
     symbol: cardSymbol.Two,
     suit: cardSuit.Spade,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 8,
     number: cardNumber.Two,
     symbol: cardSymbol.Two,
     suit: cardSuit.Diamonds,
-    isShackle: false
+    isShackle: false,
   },
 
   // 3
@@ -106,28 +105,28 @@ const cards = [
     number: cardNumber.Three,
     symbol: cardSymbol.Three,
     suit: cardSuit.Clubs,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 10,
     number: cardNumber.Three,
     symbol: cardSymbol.Three,
     suit: cardSuit.Hearts,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 11,
     number: cardNumber.Three,
     symbol: cardSymbol.Three,
     suit: cardSuit.Spade,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 12,
     number: cardNumber.Three,
     symbol: cardSymbol.Three,
     suit: cardSuit.Diamonds,
-    isShackle: false
+    isShackle: false,
   },
 
   // 4
@@ -136,28 +135,28 @@ const cards = [
     number: cardNumber.Four,
     symbol: cardSymbol.Four,
     suit: cardSuit.Clubs,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 14,
     number: cardNumber.Four,
     symbol: cardSymbol.Four,
     suit: cardSuit.Hearts,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 15,
     number: cardNumber.Four,
     symbol: cardSymbol.Four,
     suit: cardSuit.Spade,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 16,
     number: cardNumber.Four,
     symbol: cardSymbol.Four,
     suit: cardSuit.Diamonds,
-    isShackle: false
+    isShackle: false,
   },
 
   // 5
@@ -166,28 +165,28 @@ const cards = [
     number: cardNumber.Five,
     symbol: cardSymbol.Five,
     suit: cardSuit.Clubs,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 18,
     number: cardNumber.Five,
     symbol: cardSymbol.Five,
     suit: cardSuit.Hearts,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 19,
     number: cardNumber.Five,
     symbol: cardSymbol.Five,
     suit: cardSuit.Spade,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 20,
     number: cardNumber.Five,
     symbol: cardSymbol.Five,
     suit: cardSuit.Diamonds,
-    isShackle: false
+    isShackle: false,
   },
 
   // 6
@@ -196,28 +195,28 @@ const cards = [
     number: cardNumber.Six,
     symbol: cardSymbol.Six,
     suit: cardSuit.Clubs,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 22,
     number: cardNumber.Six,
     symbol: cardSymbol.Six,
     suit: cardSuit.Hearts,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 23,
     number: cardNumber.Six,
     symbol: cardSymbol.Six,
     suit: cardSuit.Spade,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 24,
     number: cardNumber.Six,
     symbol: cardSymbol.Six,
     suit: cardSuit.Diamonds,
-    isShackle: false
+    isShackle: false,
   },
 
   // 7
@@ -226,28 +225,28 @@ const cards = [
     number: cardNumber.Seven,
     symbol: cardSymbol.Seven,
     suit: cardSuit.Clubs,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 26,
     number: cardNumber.Seven,
     symbol: cardSymbol.Seven,
     suit: cardSuit.Hearts,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 27,
     number: cardNumber.Seven,
     symbol: cardSymbol.Seven,
     suit: cardSuit.Spade,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 28,
     number: cardNumber.Seven,
     symbol: cardSymbol.Seven,
     suit: cardSuit.Diamonds,
-    isShackle: false
+    isShackle: false,
   },
 
   // 8
@@ -256,28 +255,28 @@ const cards = [
     number: cardNumber.Eight,
     symbol: cardSymbol.Eight,
     suit: cardSuit.Clubs,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 30,
     number: cardNumber.Eight,
     symbol: cardSymbol.Eight,
     suit: cardSuit.Hearts,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 31,
     number: cardNumber.Eight,
     symbol: cardSymbol.Eight,
     suit: cardSuit.Spade,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 32,
     number: cardNumber.Eight,
     symbol: cardSymbol.Eight,
     suit: cardSuit.Diamonds,
-    isShackle: false
+    isShackle: false,
   },
 
   // 9
@@ -286,28 +285,28 @@ const cards = [
     number: cardNumber.Nine,
     symbol: cardSymbol.Nine,
     suit: cardSuit.Clubs,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 34,
     number: cardNumber.Nine,
     symbol: cardSymbol.Nine,
     suit: cardSuit.Hearts,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 35,
     number: cardNumber.Nine,
     symbol: cardSymbol.Nine,
     suit: cardSuit.Spade,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 36,
     number: cardNumber.Nine,
     symbol: cardSymbol.Nine,
     suit: cardSuit.Diamonds,
-    isShackle: false
+    isShackle: false,
   },
 
   // 10
@@ -316,28 +315,28 @@ const cards = [
     number: cardNumber.Ten,
     symbol: cardSymbol.Ten,
     suit: cardSuit.Clubs,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 38,
     number: cardNumber.Ten,
     symbol: cardSymbol.Ten,
     suit: cardSuit.Hearts,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 39,
     number: cardNumber.Ten,
     symbol: cardSymbol.Ten,
     suit: cardSuit.Spade,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 40,
     number: cardNumber.Ten,
     symbol: cardSymbol.Ten,
     suit: cardSuit.Diamonds,
-    isShackle: false
+    isShackle: false,
   },
 
   // Q
@@ -346,28 +345,28 @@ const cards = [
     number: cardNumber.Queen,
     symbol: cardSymbol.Queen,
     suit: cardSuit.Clubs,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 42,
     number: cardNumber.Queen,
     symbol: cardSymbol.Queen,
     suit: cardSuit.Hearts,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 43,
     number: cardNumber.Queen,
     symbol: cardSymbol.Queen,
     suit: cardSuit.Spade,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 44,
     number: cardNumber.Queen,
     symbol: cardSymbol.Queen,
     suit: cardSuit.Diamonds,
-    isShackle: false
+    isShackle: false,
   },
 
   // J
@@ -376,28 +375,28 @@ const cards = [
     number: cardNumber.Jack,
     symbol: cardSymbol.Jack,
     suit: cardSuit.Clubs,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 46,
     number: cardNumber.Jack,
     symbol: cardSymbol.Jack,
     suit: cardSuit.Hearts,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 47,
     number: cardNumber.Jack,
     symbol: cardSymbol.Jack,
     suit: cardSuit.Spade,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 48,
     number: cardNumber.Jack,
     symbol: cardSymbol.Jack,
     suit: cardSuit.Diamonds,
-    isShackle: false
+    isShackle: false,
   },
 
   // K
@@ -406,44 +405,39 @@ const cards = [
     number: cardNumber.King,
     symbol: cardSymbol.King,
     suit: cardSuit.Clubs,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 50,
     number: cardNumber.King,
     symbol: cardSymbol.King,
     suit: cardSuit.Hearts,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 51,
     number: cardNumber.King,
     symbol: cardSymbol.King,
     suit: cardSuit.Spade,
-    isShackle: false
+    isShackle: false,
   },
   {
     id: 52,
     number: cardNumber.King,
     symbol: cardSymbol.King,
     suit: cardSuit.Diamonds,
-    isShackle: false
-  }
+    isShackle: false,
+  },
 ];
 
-// module.exports = {
-//   getCards: cards(() => Math.random() - 0.5)
-// };
-
-class Cards {
-  get shuffledCards() {
-    const shuffle = cards.sort(() => Math.random() - 0.5);
-    return shuffle;
+class UserService {
+  static async shuffledCards() {
+    return [...cards].sort(() => Math.random() - 0.5);
   }
 
-  get allCards() {
+  static async allCards() {
     return cards;
   }
 }
 
-module.exports = Cards;
+module.exports = UserService;

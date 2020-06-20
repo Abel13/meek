@@ -2,11 +2,6 @@
 
 const Route = use("Route");
 
-Route.get("/", ({ request, response }) => {
-  // request
-  return response.json({ ok: "OK" });
-});
-
 //Users
 Route.post("users", "UserController.store").validator("User");
 
@@ -16,12 +11,19 @@ Route.post("sessions", "SessionController.store");
 //Cards
 
 Route.group(() => {
+  Route.get("/", ({ request, response, auth }) => {
+    // request
+    return response.json({ ok: "OK", user: auth.user.secure_id });
+  });
+
   Route.get("card", "CardController.show");
   //Shuffle
   Route.get("shuffle", "ShuffleController.show");
 
   //Match
-  Route.resource("matches", "MatchController").apiOnly();
+  Route.resource("matches", "MatchController")
+    .validator(new Map([[["matches.store"], ["Match"]]]))
+    .apiOnly();
   Route.post("usermatch", "MatchController.storeUserMatch");
   Route.get("usersmatch/:match_id", "MatchController.showUserMatch");
 

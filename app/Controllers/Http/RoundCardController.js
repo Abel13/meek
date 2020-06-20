@@ -1,31 +1,26 @@
 "use strict";
-const Round = use("App/Models/Round");
-const UserRoundCard = use("App/Models/UserRoundCard");
-const Database = use("Database");
-const Cards = use("App/engine/cards");
+const RoundService = use("App/Services/RoundService");
+const DatabaseService = use("App/Services/DatabaseService");
 
 class RoundCardController {
   async show({ params, request, response, view, auth }) {
-    const round = await Round.query()
-      .where("secure_id", params.id)
-      .firstOrFail();
+    const round = await RoundService.selectRound(params.id);
 
-    const userCards = await Database.from("user_round_cards")
-      .select("card")
-      .where("user_id", auth.user.id)
-      .andWhere("round_id", round.id);
+    const userCards = await DatabaseService.selectPlayerCardsByRoundId(
+      auth.user.id,
+      round.id
+    );
 
-    const turnsCards = await Database.from("user_turns")
-      .select("card")
-      .innerJoin("turns", "turn_id", "turns.id")
-      .where("round_id", round.id)
-      .andWhere("user_id", auth.user.id);
+    const turnsCards = await DatabaseService.selectPlayedCardsByRoundId(
+      round.id,
+      auth.user.id
+    );
 
     // removing played cards in all turns from this round
     let myCards = [];
-    userCards.forEach(myCard => {
+    userCards.forEach((myCard) => {
       let played = false;
-      turnsCards.forEach(playedCard => {
+      turnsCards.forEach((playedCard) => {
         if (playedCard.card === myCard.card) {
           played = true;
           return;

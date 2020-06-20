@@ -1,10 +1,10 @@
 "use strict";
 
-const Cards = use("App/engine/cards");
+const CardService = use("App/Services/CardService");
 
 class ShuffleController {
   async show() {
-    return Cards.sort(() => Math.random() - 0.5);
+    return CardService.shuffledCards();
   }
 }
 

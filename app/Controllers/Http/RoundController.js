@@ -3,15 +3,12 @@
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
-const Round = use("App/Models/Round");
-
-const Match = use("App/Models/Match");
+const RoundService = use("App/Services/RoundService");
 const MatchService = use("App/Services/MatchService");
-
-const Cards = use("App/engine/cards");
-const UsersMatch = use("App/models/UserMatch");
-const UserRound = use("App/models/UserRound");
-const Database = use("Database");
+const UserRoundService = use("App/Services/UserRoundService");
+const DatabaseService = use("App/Services/DatabaseService");
+const UserMatchService = use("App/Services/UserMatchService");
+const TurnService = use("App/Services/TurnService");
 
 /**
  * Resourceful controller for interacting with rounds
@@ -41,72 +38,12 @@ class RoundController {
 
   async store({ request, response }) {
     const data = request.only(["match_id"]);
-    const match = await MatchService.selectMatch(data.match_id);
-
-    //get actual round
-    const round_count = await Round.query()
-      .where("match_id", match.id)
-      .count("match_id as round");
-    const round_number = round_count[0].round + 1;
-
-    //get match players
-    const matchPlayers = await Database.from("user_matches")
-      .where("match_id", match.id)
-      .andWhere("playing", true);
-
-    const numberOfPlayers = matchPlayers.length;
-
-    if (numberOfPlayers < 3) {
-      return response.status(400).json({ error: "No players enought!" });
-    }
-
-    //select the number of turns
-    const rest = round_number % 10;
-    const total_turns =
-      numberOfPlayers === rest >= 0 && rest <= 5 ? rest + 1 : 11 - rest;
-
-    //select a card to shackle
-    const min = Math.ceil(0);
-    const max = Math.floor(52);
-    const selectedShackle = Math.floor(Math.random() * (max - min) + min);
-
-    //shuffle cards
-    const cards = [...new Cards().shuffledCards];
-
-    //remove the shackle from deck
-    const selectedCard = await cards.splice(selectedShackle, 1);
-    const shackle = selectedCard[0].number === 13 ? 1 : selectedCard[0].number;
-
-    //create round
-    const round = await Round.create({
-      match_id: match.id,
-      round_number,
-      total_turns,
-      shackle,
-    });
-
-    //dealing the cards
-    const playerCards = [];
-    matchPlayers.forEach((element) => {
-      for (let index = 0; index < total_turns; index++) {
-        const card = cards.pop();
-        const ruc = {
-          user_id: element.user_id,
-          round_id: round.id,
-          card: card.id,
-        };
-        playerCards.push(ruc);
-      }
-    });
-    await Database.from("user_round_cards").insert(playerCards);
-
+    const round = await RoundService.newRound(data.match_id);
     return {
-      round: {
-        round_number: round.round_number,
-        total_turns: round.total_turns,
-        shackle: round.shackle,
-        secure_id: round.secure_id,
-      },
+      secure_id: round.secure_id,
+      round_number: round.round_number,
+      total_turns: round.total_turns,
+      shackle: round.shackle
     };
   }
 
@@ -122,15 +59,15 @@ class RoundController {
   async show({ params, request, response, view }) {
     const match = await MatchService.selectMatch(params.id);
 
-    const round = await Round.query().where("match_id", match.id).last();
+    const round = await RoundService.selectLastRoundByMatchId(match.id);
 
     return {
       round: {
         round_number: round.round_number,
         total_turns: round.total_turns,
         shackle: round.shackle,
-        secure_id: round.secure_id,
-      },
+        secure_id: round.secure_id
+      }
     };
   }
 
@@ -156,14 +93,31 @@ class RoundController {
   async update({ params, request, response, auth }) {
     const { bet } = request.only(["bet"]);
 
-    const round = await Round.query()
-      .where("secure_id", params.id)
-      .firstOrFail();
+    console.log("ROUND>", params.id)
+    const round = await RoundService.selectRound(params.id);
+    const bets = await DatabaseService.selectNullBets(round.id);
+    const match = await MatchService.selectMatchById(round.match_id);
 
-    await UserRound.query()
-      .where("round_id", round.id)
-      .andWhere("user_id", auth.user.id)
-      .update({ bet });
+    await UserRoundService.bet(round.id, auth.user.id, bet);
+
+    //if first round and last bet then start new Round
+    if (round.round_number === 1 && bets.length === 1) {
+      console.log("ULTIMA APOSTA")
+      const turn = await TurnService.selectTurnWinner(1, round.id);
+      await UserRoundService.addScore(round.id, turn.winner_id);
+
+      await UserMatchService.calculateLife(round);
+      console.log("CALCULOU VIDAS")
+
+      const data = await RoundService.newRound(match.secure_id);
+      console.log("NOVO ROUND:", data.round)
+
+      //creates first turn
+      const newTurn = await TurnService.createTurn(data.round.id, 1);
+      console.log("NOVO TURNO:", newTurn.id)
+
+      await TurnService.createUsersTurn(data.round, newTurn);
+    }
 
     return { round: round.secure_id, user: auth.user.secure_id, bet };
   }

@@ -1,10 +1,10 @@
 "use strict";
 
-const Cards = use("App/engine/cards");
+const CardService = use("App/Services/CardService");
 
 class CardController {
   async show() {
-    return Cards;
+    return CardService.allCards();
   }
 }
 
